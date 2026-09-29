@@ -1,0 +1,128 @@
+{
+  "product": "DelayDector",
+  "report_date": "2026-09-25",
+  "reporting_period": "September 2026",
+  "disclaimer": "Demonstration prototype. All projects, risk scores and AI outputs on this platform are simulated showcase data and are not connected to live government systems.",
+  "problem_statement": {
+    "id": "SIH26103",
+    "title": "Use case on web-based integrated project-monitoring platform",
+    "organization": "Ministry of Statistics and Programme Implementation (MoSPI)",
+    "department": "Data Informatics & Innovation Division",
+    "category": "Software",
+    "theme": "Smart Automation"
+  },
+  "data_sources": [
+    {
+      "name": "PAIMANA portal",
+      "detail": "Project Assessment, Infrastructure Monitoring and Analytics for Nation-building — the live monthly reporting portal that replaced OCMS.",
+      "role": "Monthly Common Upload Form submissions from implementing agencies"
+    },
+    {
+      "name": "OCMS archive",
+      "detail": "Online Computerised Monitoring System records, which carry the historical reason-for-delay labels the newer format no longer publishes.",
+      "role": "Supervised training labels for time and cost overrun"
+    },
+    {
+      "name": "Flash Report series",
+      "detail": "MoSPI's monthly report on central sector projects costing Rs 150 crore and above.",
+      "role": "Benchmarking and sector comparison"
+    }
+  ],
+  "mospi_reasons": {
+    "R1": "Delay in land acquisition",
+    "R2": "Delay in obtaining forest / environment clearances",
+    "R3": "Lack of infrastructure support and linkages",
+    "R4": "Delay in tie-up of project financing",
+    "R5": "Delay in finalization of detailed engineering / change in scope",
+    "R6": "Delay in tendering and approvals",
+    "R7": "Delay in ordering and equipment supply",
+    "R8": "Law and order problems",
+    "R9": "Geological surprises",
+    "R10": "Pre-commissioning teething troubles and contractual issues",
+    "UNC": "Not captured in the Common Upload Form"
+  },
+  "data_gaps": [
+    {
+      "variable": "Contractor past-performance index",
+      "why": "Repeat slippage by the same contractor across projects is the single strongest leading indicator in the demo model.",
+      "source_hint": "Derivable from CPPP tender history joined on contractor PAN",
+      "modelled_gain_pct": 6.4
+    },
+    {
+      "variable": "Rainfall / working-days lost",
+      "why": "Weather accounts for up to 20% of attributed slippage on hill and coastal packages but has no CUF field.",
+      "source_hint": "IMD district rainfall series, joined on project district",
+      "modelled_gain_pct": 4.1
+    },
+    {
+      "variable": "Milestone-level progress (not just cumulative %)",
+      "why": "Cumulative physical progress hides which activity is actually stalled, so root-cause attribution stays coarse.",
+      "source_hint": "Extend the Common Upload Form with milestone rows",
+      "modelled_gain_pct": 5.2
+    },
+    {
+      "variable": "Bill clearance / payment latency",
+      "why": "Running-account bills pending beyond 60 days precede contractor demobilisation by roughly one quarter.",
+      "source_hint": "PFMS payment timestamps",
+      "modelled_gain_pct": 3.6
+    },
+    {
+      "variable": "Commodity price index at package level",
+      "why": "Steel and cement movement explains a large share of cost revision that the current fields cannot separate from scope change.",
+      "source_hint": "Office of the Economic Adviser WPI series",
+      "modelled_gain_pct": 2.8
+    }
+  ],
+  "model_card": {
+    "disclaimer": "Illustrative prototype figures. No model is trained in this demo; these values describe the intended evaluation design.",
+    "target": "Time overrun of more than 30 days against the sanctioned completion date",
+    "validation": "Rolling-origin split on archived monthly reports, 3 folds",
+    "models": [
+      {
+        "name": "Logistic regression (baseline)",
+        "family": "Conventional statistics",
+        "accuracy": 0.74,
+        "recall": 0.63,
+        "lead_time_days": 41,
+        "note": "Interpretable, cheap to retrain, the benchmark every claim is measured against."
+      },
+      {
+        "name": "Gradient-boosted trees",
+        "family": "Machine learning",
+        "accuracy": 0.86,
+        "recall": 0.81,
+        "lead_time_days": 68,
+        "note": "Captures interaction between clearance status and contractor load that the linear baseline misses."
+      },
+      {
+        "name": "Survival model (time-to-milestone)",
+        "family": "Statistical / ML hybrid",
+        "accuracy": 0.83,
+        "recall": 0.78,
+        "lead_time_days": 74,
+        "note": "Predicts when slippage occurs, not only whether, which is what an early-warning desk needs."
+      }
+    ]
+  },
+  "portfolio": {
+    "total_projects": 57,
+    "monitored_in_detail": 30,
+    "on_track": 27,
+    "at_risk": 17,
+    "delayed": 13,
+    "risk_distribution": {
+      "LOW": 27,
+      "MEDIUM": 13,
+      "HIGH": 12,
+      "CRITICAL": 5
+    },
+    "sanctioned_cost_crore": 195000,
+    "revised_cost_crore": 214810,
+    "expenditure_crore": 111150,
+    "cost_overrun_crore": 19810,
+    "cost_overrun_pct": 10.2,
+    "avg_health_score": 74,
+    "avg_time_overrun_days": 43,
+    "states_covered": 15
+  }
+}
