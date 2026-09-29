@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import logoMark from "@/public/logo-mark.png";
 import { cn } from "@/lib/analytics";
 
 /**
@@ -23,7 +24,7 @@ export function Logo({
       title={title}
     >
       <Image
-        src="/logo-mark.png"
+        src={logoMark}
         alt={title}
         width={size}
         height={size}

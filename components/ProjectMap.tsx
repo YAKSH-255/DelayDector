@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { CircleMarker, GeoJSON, MapContainer, Popup, Tooltip } from "react-leaflet";
 import type { FeatureCollection, Geometry } from "geojson";
 import "leaflet/dist/leaflet.css";
+import boundariesJson from "@/data/india-states.json";
 import { RISK_META, formatCrore } from "@/lib/analytics";
 import type { Project } from "@/lib/types";
 
@@ -22,21 +23,8 @@ export default function ProjectMap({
   projects: Project[];
   height?: number;
 }) {
-  const [boundaries, setBoundaries] = useState<FeatureCollection<Geometry, StateProps> | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    // Boundaries are served from /public, so the map needs no internet connection.
-    fetch("/india-states.json")
-      .then((r) => r.json())
-      .then((data) => {
-        if (!cancelled) setBoundaries(data);
-      })
-      .catch(() => setBoundaries(null));
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // Boundaries are bundled, so the map needs no network and no base-path handling.
+  const boundaries = boundariesJson as FeatureCollection<Geometry, StateProps>;
 
   /** Projects per state drive both the choropleth and the hover tooltip. */
   const byState = useMemo(() => {
